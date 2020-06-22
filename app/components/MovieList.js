@@ -16,15 +16,29 @@ class movieList extends Component {
         super(props);
         this.state = {
             movieList: [],
-            isLoading: true
+            isLoading: true,
+            start: 0,
+            count: 6,
+            total: 0,
+            refresh: false
         }
     }
+    returnUri(uri) {
+        return `${uri}&start=${this.state.start}&count=${this.state.count}`
+    }
+    renderFooter(){
+        return(
+            <View>
+                <ActivityIndicator size="small" color="#6435c9" />
+            </View>
+        )
+    }
     fetchData() {
-        fetch('http://api.douban.com/v2/movie/in_theaters?apikey=0df993c66c0c636e29ecbb5344252a4a')
+        fetch(this.returnUri('http://api.douban.com/v2/movie/in_theaters?apikey=0df993c66c0c636e29ecbb5344252a4a'))
             .then(response => response.json())
             .then(res => {
                 this.setState({
-                    movieList: res.subjects,
+                    movieList: this.state.movieList.concat(res.subjects),
                     isLoading: false
                 })
             })
@@ -34,6 +48,17 @@ class movieList extends Component {
             name: item.title,
             id: item.id,
         })
+    }
+    onEndReached() {
+        // console.log('到底啦')
+        // this.setState({
+        //     start: 5
+        // }, console.log(this.state.start))
+
+    }
+    onRefresh(){
+        console.log(1)
+        this.fetchData()
     }
     listTpl(item) {
         return (
@@ -79,6 +104,12 @@ class movieList extends Component {
                                 renderItem={({ item }) =>
                                     this.listTpl(item)
                                 }
+                                onRefresh={this.onRefresh.bind(this)}
+                                refreshing={this.state.refresh}
+                                onEndReached={()=>this.onEndReached()}
+                                onEndReachedThreshold={0.1}
+                                initialNumToRender={this.state.count}
+                                ListFooterComponent={this.renderFooter.bind(this)}
                             >
                             </FlatList>
                         )

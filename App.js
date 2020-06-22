@@ -21,6 +21,8 @@ import MovieList from './app/components/MovieList';
 import USBox from './app/components/USBox';
 import BoxOffice from './app/components/BoxOffice';
 import Search from './app/components/Search';
+import User from './app/components/User';
+import Redux from './app/components/Redux';
 import TabNavigator from 'react-native-tab-navigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -28,6 +30,15 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Icon from 'react-native-vector-icons/FontAwesome';
 // const myIcon = <Icon name="rocket" size={30} color="#900" />;
 // const Tab = createMaterialTopTabNavigator();
+
+import { createStore,applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'
+import reducers from "./app/store/reducers"
+import thunk from 'redux-thunk'
+
+let store = createStore(reducers,applyMiddleware(thunk))
+
+
 const Tab = createBottomTabNavigator();
 
 const TabBarIcon1 = (focused, color) => {
@@ -45,6 +56,11 @@ const TabBarIcon3 = (focused, color) => {
         <Icon name={focused ? "search" : "search"} size={focused ? 32 : 32} color={color} />
     );
 };
+const TabBarIcon4 = (focused, color) => {
+    return (
+        <Icon name={focused ? "user" : "user-o"} size={focused ? 32 : 32} color={color} />
+    );
+};
 
 class App extends Component {
     constructor(props) {
@@ -60,7 +76,7 @@ class App extends Component {
 
     render() {
         return (
-            <>
+            <Provider store={store}>
                 <StatusBar backgroundColor="darkslateblue" />
                 {/* <SafeAreaView style={styles.safeAreaView}> */}
                 <View style={{ flex: 1 }}>
@@ -73,8 +89,10 @@ class App extends Component {
                                         return TabBarIcon1(focused, color);
                                     }else if(route.name === 'BoxOffice'){
                                         return TabBarIcon2(focused, color);
-                                    } else{
+                                    } else if(route.name === 'Search'){
                                         return TabBarIcon3(focused, color);
+                                    } else {
+                                        return TabBarIcon4(focused, color);
                                     }
                                 },
                             })}
@@ -82,6 +100,8 @@ class App extends Component {
                             <Tab.Screen name="Features" component={Features} options={{ title: '正在热映' }} />
                             <Tab.Screen name="BoxOffice" component={BoxOffice} options={{ title: '北美票房' }} />
                             <Tab.Screen name="Search" component={Search} options={{ title: '搜索' }} />
+                            <Tab.Screen name="User" component={User} options={{ title: '我的' }} />
+                            <Tab.Screen name="Redux" component={Redux} options={{ title: 'Redux' }} />
                         </Tab.Navigator>
                     </NavigationContainer>
                 </View>
@@ -117,7 +137,7 @@ class App extends Component {
                 </TabNavigator> */}
 
                 {/* </SafeAreaView> */}
-            </>
+             </Provider>
         );
     }
 

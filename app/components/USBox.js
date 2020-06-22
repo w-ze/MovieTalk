@@ -33,6 +33,10 @@ class USBox extends Component {
     onPressButton(){
         console.log(111)
     }
+    onEndReached(){
+        console.log('到底啦')
+    }
+    
     listTpl(item) {
         return (
             <TouchableHighlight
@@ -77,6 +81,8 @@ class USBox extends Component {
                                 renderItem={({ item }) =>
                                     this.listTpl(item)
                                 }
+                                onEndReached={this.onEndReached.bind(this)}
+                                onEndReachedThreshold={0.2}
                             >
                             </FlatList>
                         )
